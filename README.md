@@ -47,13 +47,13 @@ flowchart TD
         key6:::virtual
     end
 
-    attr1-1 --> key1{"🔑<sub>1.1.1</sub>"} --> val1
-    attr1-2 --> key2{"🔑<sub>1.2.1</sub>"} --> val2
-    key2 -.-> key3{"🔑<sub>1.2.2</sub>"} --> val3
-    key3 -.-> key4{"🔑<sub>1.2.3</sub>"} --> val4
+    attr1-1 --> key1{"🔑1.1.1"} --> val1
+    attr1-2 --> key2{"🔑1.2.1"} --> val2
+    key2 -.-> key3{"🔑1.2.2"} --> val3
+    key3 -.-> key4{"🔑1.2.3"} --> val4
 
-    attr2-1 --> key5{"🔑<sub>2.1.1</sub>"} --> val5
-    key5 -.-> key6{"🔑<sub>2.1.2</sub>"} --> val6
+    attr2-1 --> key5{"🔑2.1.1"} --> val5
+    key5 -.-> key6{"🔑2.1.2"} --> val6
 
     subgraph Concrete
         val1("(ent1, attr1-1, val1, [])")
@@ -62,15 +62,6 @@ flowchart TD
         val4("(ent2, attr1-2, val4, [cidX, cidY])")
         val5("(ent2, attr2-1, val5, [cidX])")
         val6("(ent2, attr2-1, val6, [])")
-    end
-
-
-    classDef red fill:#fdc
-    classDef yellow fill:#fdfd96 
-    classDef green fill:lightgreen
-    class Virtual red
-    class Keys yellow
-    class Concrete green
 ```
 
 # 3 Key Derivation
