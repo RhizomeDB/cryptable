@@ -90,6 +90,9 @@ flowchart TD
     end
 ```
 
+- Justify the order
+- explain why no cross linking shenannigans
+
 # 3 Key Derivation
 
 Skip ratchet, but different use from WNFS
