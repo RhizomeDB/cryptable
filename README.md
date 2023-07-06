@@ -62,6 +62,7 @@ flowchart TD
         val4("(ent2, attr1-2, val4, [cidX, cidY])")
         val5("(ent2, attr2-1, val5, [cidX])")
         val6("(ent2, attr2-1, val6, [])")
+    end
 ```
 
 # 3 Key Derivation
