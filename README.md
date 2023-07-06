@@ -22,7 +22,23 @@ A hierarchically encrypted EVAC tuple store.
 
 WNFS
 
-# 2 Heirarchical Read Control
+- Scope: read control only; writes are out of scope of THIS spec
+
+## 1.x 
+
+- Manage as few keys as possible
+- Flexible enough to store in multiple ways (i.e. the data layer below this)
+- Sensible defaults: Simple rules _inside_ a store (though stores can be broken up arbitrarily to more custom control)
+
+TODO bring the data/object table from WNFS here
+
+## 1.x Lookup Performance
+
+- Raw decryption speed
+- Seek on large stores
+- Small network footprint whenever possible
+
+# 2 Heirarchical Encryption
 
 ``` mermaid
 flowchart TD
@@ -32,10 +48,19 @@ flowchart TD
 
     subgraph Virtual
         store --> ent1:::virtual
-        ent1 -.-> ent2
-        ent1 ----> attr1-1:::virtual
-        ent2 ----> attr2-1:::virtual
+        ent1 -..-> ent2
+        ent1 ~~~ attr1-1:::virtual
+        ent1 ----> attr1-1
+        ent2 --> attr2-1:::virtual
+        ent2 ~~~~ attr1-1
         attr1-1 -.-> attr1-2:::virtual
+
+        val1-1-1:::virtual
+        val1-2-1:::virtual
+        val1-2-2:::virtual
+        val1-2-3:::virtual
+        val2-1-1:::virtual
+        val2-1-2:::virtual
     end
     
     subgraph Keys ["Derived Keys"]
@@ -47,13 +72,13 @@ flowchart TD
         key6:::virtual
     end
 
-    attr1-1 --> key1{"🔑1.1.1"} --> val1
-    attr1-2 --> key2{"🔑1.2.1"} --> val2
-    key2 -.-> key3{"🔑1.2.2"} --> val3
-    key3 -.-> key4{"🔑1.2.3"} --> val4
+    attr1-1 --> val1-1-1 --> key1{"🔑1.1.1"} --> val1
+    attr1-2 -----> val1-2-1 --> key2{"🔑1.2.1"} --> val2
+    val1-2-1 -.-> val1-2-2 --> key3{"🔑1.2.2"} --> val3
+    val1-2-2 -.-> val1-2-3 --> key4{"🔑1.2.3"} --> val4
 
-    attr2-1 --> key5{"🔑2.1.1"} --> val5
-    key5 -.-> key6{"🔑2.1.2"} --> val6
+    attr2-1 -------> val2-1-1 --> key5{"🔑2.1.1"} --> val5
+    val2-1-1 -.-> val2-1-2 --> key6{"🔑2.1.2"} --> val6
 
     subgraph Concrete
         val1("(ent1, attr1-1, val1, [])")
@@ -67,4 +92,33 @@ flowchart TD
 
 # 3 Key Derivation
 
-A store is begun 
+Skip ratchet, but different use from WNFS
+
+A store MUST be seeded with a random nonce of at least 128 bits.
+
+A cryptstore MAY have an unlimited number of levels, but at minimum it MUST contain the following levels:
+
+- StoreRoot
+- Entity
+- Attribute
+- Value
+
+Being granted access to a 
+
+MUST be equipped with a one-way merge function that takes two or more keys and deterministically derives a new value. Concatenating and hashing with SHA2-256 or BLAKE3 is RECOMMENDED.
+
+## 3.1 Vertical Derivation
+
+Derivation of 
+
+## 3.2 Horizonal Derivation
+
+To lock any level to a single version, merge the 
+
+# 4 Semantic Collison
+
+A field of a particular value MAY be assigned multiple times. 
+
+# 5 Prior Art
+
+- Skip Ratchet & WNFS
