@@ -28,6 +28,7 @@ WNFS
 
 - Manage as few keys as possible
 - Flexible enough to store in multiple ways (i.e. the data layer below this)
+
 - Sensible defaults: Simple rules _inside_ a store (though stores can be broken up arbitrarily to more custom control)
 
 TODO bring the data/object table from WNFS here
