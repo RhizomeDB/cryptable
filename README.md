@@ -58,9 +58,68 @@ erDiagram
     Attribute ||--|{ Value: contains
 ```
 
-### 1.2.2 Temporal Access
+### 1.2.2 Stream Access
 
 On tables
+
+Needs work:
+
+``` mermaid
+flowchart
+    user --> s1
+    
+    s1 --> e2
+
+    subgraph S1
+        s1
+
+        subgraph E1
+            s1 --> e1
+
+            subgraph A1-1
+                e1 --> a1-1
+                a1-1 --> a1-1s[...]
+            end
+
+            subgraph A1-2
+                direction LR
+
+                a1-1 -.-> a1-2
+                a1-2
+                a1-2 --> v1-2-1
+
+                subgraph vals
+                    %% direction LR
+                    
+
+                    v1-2-1
+                    v1-2-2
+                    v1-2-3
+
+                    v1-2-1 -.-> v1-2-2 -.-> v1-2-3
+                end
+            end
+        end
+
+        v1-2-1 -->|u * s1 * e1 * a1-2 * v1-2-1| factA
+        v1-2-2 -->|u * s1 * e1 * a1-2 * v1-2-2| factB
+        v1-2-3 -->|u * s1 * e1 * a1-2 * v1-2-3| factC
+
+        subgraph facts
+            factA
+            factC
+            factB
+        end
+
+        subgraph E2
+            e2 --> e2s[...]
+        end
+    end
+
+    subgraph S2
+    s1 -.-> s2 --> s2s[...] 
+    end
+```
 
 ### 1.2.3 DAG History
 
