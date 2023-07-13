@@ -191,6 +191,76 @@ The tabular heirarchy is as follows:
 Note that `causedBy` does not occur in this heirarchy. To have access to a point in history, the usre MUST have access to the relevant fact in the tabular heirarchy.
 
 ``` mermaid
+flowchart
+    subgraph root
+        subgraph store1
+            direction LR
+
+            subgraph entity1.1
+                direction LR
+
+                subgraph attribute1.1.1
+                    value1.1.1.1
+                    value1.1.1.2
+                    value1.1.1.3
+                end
+
+                subgraph attribute1.1.2
+                    value1.1.2.1
+                    value1.1.2.2
+                end
+            end
+
+            subgraph entity1.2
+                direction LR
+
+                subgraph attribute1.2.1
+                    value1.2.1.1
+                    value1.2.1.2
+                    value1.2.1.3
+                end
+
+                subgraph attribute1.2.2
+                    value1.2.2.1
+                    value1.2.2.2
+                end
+            end
+        end
+
+        subgraph store2
+            direction LR
+
+            subgraph entity2.1
+                direction LR
+
+                subgraph attribute2.1.1
+                    value2.1.1.1
+                end
+
+                subgraph attribute2.1.2
+                    value2.1.2.1
+                    value2.1.2.2
+                end
+            end
+        end
+    end
+
+    store1 -.-> store2
+    entity1.1 -.->entity1.2
+    attribute1.1.1 -.-> attribute1.1.2
+
+    value1.1.1.1 -.-> value1.1.1.2 -.-> value1.1.1.3
+    value1.1.2.1 -.-> value1.1.2.2
+
+    attribute1.2.1 -.-> attribute1.2.2
+    value1.2.1.1 -.-> value1.2.1.2 -.-> value1.2.1.3
+    value1.2.2.1 -.-> value1.2.2.2
+
+    attribute2.1.1 -.-> attribute2.1.2
+    value2.1.2.1 -.-> value2.1.2.2
+```
+
+``` mermaid
 flowchart TD
     classDef virtual stroke:#333,stroke-dasharray: 5 5;
 
@@ -268,11 +338,17 @@ To lock any level to a single version, merge the
 # 4 Tag Derivation
 
 
-# 5 Prior Art
+# 5 Key Rotation 
+
+also Post COmpromise
+
+
+
+# 6 Prior Art
 
 - Skip Ratchet & WNFS
 
-# 6 Acknowledgements
+# 7 Acknowledgements
 
 Thanks to [Philipp Krüger][matheus23] for his work on [WNFS]
 
