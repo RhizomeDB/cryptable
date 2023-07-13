@@ -260,6 +260,23 @@ flowchart
     value2.1.2.1 -.-> value2.1.2.2
 ```
 
+# 3 Key Derivation
+
+Skip ratchet, but different use from WNFS
+
+A store MUST be seeded with a random nonce of at least 128 bits.
+
+A cryptstore MAY have an unlimited number of levels, but at minimum it MUST contain the following levels:
+
+- StoreRoot
+- Entity
+- Attribute
+- Value
+
+Being granted access to a 
+
+MUST be equipped with a one-way merge function that takes two or more keys and deterministically derives a new value. Concatenating and hashing with SHA2-256 or BLAKE3 is RECOMMENDED.
+
 ``` mermaid
 flowchart TD
     classDef virtual stroke:#333,stroke-dasharray: 5 5;
@@ -309,23 +326,6 @@ flowchart TD
         val6("(ent2, attr2-1, val2-1-3, [])") --> tag6(tag: 8i9)
     end
 ```
-
-# 3 Key Derivation
-
-Skip ratchet, but different use from WNFS
-
-A store MUST be seeded with a random nonce of at least 128 bits.
-
-A cryptstore MAY have an unlimited number of levels, but at minimum it MUST contain the following levels:
-
-- StoreRoot
-- Entity
-- Attribute
-- Value
-
-Being granted access to a 
-
-MUST be equipped with a one-way merge function that takes two or more keys and deterministically derives a new value. Concatenating and hashing with SHA2-256 or BLAKE3 is RECOMMENDED.
 
 ## 3.1 Vertical Derivation
 
