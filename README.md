@@ -337,6 +337,8 @@ To lock any level to a single version, merge the
 
 # 4 Tag Derivation
 
+AEAD
+
 
 # 5 Key Rotation 
 
