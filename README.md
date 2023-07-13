@@ -38,11 +38,35 @@ The design outlined in this specification MAY be extended by futher splitting da
 
 Once data is retrieved and decrypted, it MAY be indexed locally (e.g. hexastore). 
 
-# 2 Query Dimensions
+## 1.2 Goals
+
+
+- Manage as few keys as possible
+- Flexible enough to store in multiple ways (i.e. the data layer below this)
+
+- Sensible defaults: Simple rules _inside_ a store (though stores can be broken up arbitrarily to more custom control)
+
+TODO bring the data/object table from WNFS here
+
+  * [x] 
+- Raw decryption speed
+- Seek on large stores
+- Small network footprint whenever possible
+
+# 2 Terminology
+
+| Term             | Description                                                 |
+|------------------|-------------------------------------------------------------|
+| Encrypted Region | Nestable encrypted collecions: stores, entities, attributes |
+| Accessible Scope | All of the facts that the viewer is capable of decrypting   |
+
+# 3 Query Dimensions
 
 One of largest challenges with encypting datalog facts is that the access patterns are not known in advance. While it's possible to structure EAV(C) fields as an orthogonal $n$-dimensional tensor, and query in any order, this has major drawbacks in both the cleartext and ciphertext cases. Representing data in this way tends to rely on duplication, indexing, and/or cyclical cross linking. This is not feasible in a Byzantine threat model.
 
 To make the problem tractable, access patterns are broken into two very broad categories which often interact: tabular heirarchy
+
+- Nested, but you can always contruct the pointer to any position in the EAV cube deterministically without doing all of teh intermediate lookups
 
 ### 1.2.1 Tabular Heirarchy
 
@@ -58,6 +82,7 @@ erDiagram
     Attribute ||--|{ Value: contains
 ```
 
+This grants the ability to discover and access new enrties in the heirarchy without having to perform a linear table scan.
 
 ### 1.2.2 Stream Access
 
@@ -135,26 +160,29 @@ Reading a CID in the `causedBy` field of a quad MUST NOT immedietly grant access
 
 While this is an important access pattern in many graph queries, it is not desired for tabular queries. Typically the shape of graph data is more important in queries with a small number of common entities and attributes. Granting access to the entire history of those paths is thus viable.
 
-Instead, the CrypTable ony provides searchable encyprtion via an authentication tag. This is not an HMAC, since the goal is to avoid calculating the unique key for every fact. A cryptographically secure hash function MUST be used, and a nonce based on the [store ID] MUST be concatenated to the cleartext CID before hahsing. This tag MAY be places anywhere on the fact's envelope. When stored in an associative map using this tag as the entry label is RECOMMENDED.
-
+Instead, the CrypTable ony provides searchable encyprtion via an authentication tag. This is not an HMAC, since the goal is to avoid calculating the unique key for every fact. A cryptographically secure hash function MUST be used, and a nonce based on the combination of the [scoped attribute's hash ID] MUST be concatenated to the cleartext CID before hahsing. This tag MAY be places anywhere on the fact's envelope. When stored in an associative map using this tag as the entry label is RECOMMENDED.
+     
 If space overhead is a concern, this tag MAY be further anonymized via truncation or XOR folding. Note that this does not increase the k-anonymity as the tag is already indistinguishable from any other tag.
 
-## 1.x 
+This does leak a small amount of data: if a user does not have the decryption key for some fact, but has a reference to the CID in a fact that they do have access to a successor of (and thus they have the attrbte hash ID), they can discover that the fact's entity and attribute, but not it's value or causal values.
 
-- Manage as few keys as possible
-- Flexible enough to store in multiple ways (i.e. the data layer below this)
+Coupled with the with the attribite tag derivation (e.g. the RSA accumluator in WNFS), scans across the store MAY be performed either strictly linearly with minimal jumps between encrypted regions.
 
-- Sensible defaults: Simple rules _inside_ a store (though stores can be broken up arbitrarily to more custom control)
+## Padding
 
-TODO bring the data/object table from WNFS here
-
-## 1.x Lookup Performance
-  * [x] 
-- Raw decryption speed
-- Seek on large stores
-- Small network footprint whenever possible
+Leaking data through length
 
 # 2 Heirarchical Encryption
+
+The tabular heirarchy is as follows:
+
+1. Root
+2. Stores 
+3. Entities
+4. Attributes
+5. Values
+
+Note that `causedBy` does not occur in this heirarchy. To have access to a point in history, the usre MUST have access to the relevant fact in the tabular heirarchy.
 
 ``` mermaid
 flowchart TD
@@ -206,9 +234,6 @@ flowchart TD
     end
 ```
 
-- Justify the order
-- explain why no cross linking shenannigans
-
 # 3 Key Derivation
 
 Skip ratchet, but different use from WNFS
@@ -242,30 +267,17 @@ A field of a particular value MAY be assigned multiple times.
 
 - Skip Ratchet & WNFS
 
-# 6 FAQ
+# 6 Acknowledgements
 
-## 6.1 What About Fully Homomorphic Encryption?
+Thanks to [Philipp Krüger][matheus23] for his work on [WNFS]
 
-## 6.2 Why Not k-Anonymity?
+Many thanks to [Steven Allen] for conversations about WNFS that applied to the
 
+<!-- External Links -->
 
+[HMAC Indexing]: https://soatok.blog/2023/03/01/database-cryptography-fur-the-rest-of-us/#hmac-indexing
+[WNFS]: https://github.com/wnfs-wg/
+[matheus23]: https://github.com/matheus23
+[stebalien]: https://github.com/stebalien
 
-TODO: actually, heck why NOT k-anym for CID histories as tags or the names of files.
-
-
-
-## 6.3 Why 
-
-
-
-
-
-
-----------------------
-
-
-
-NOTES
-
-
-- Nested, but you can always contruct the pointer to any position in the EAV cube deterministically without doing all of teh intermediate lookups
+<!-- Internal Links -->
