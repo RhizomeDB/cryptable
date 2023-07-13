@@ -60,7 +60,9 @@ TODO bring the data/object table from WNFS here
 | Encrypted Region | Nestable encrypted collecions: stores, entities, attributes |
 | Accessible Scope | All of the facts that the viewer is capable of decrypting   |
 
-# 3 Query Dimensions
+# 3 Encryption Geometry[^Unknowable Geometry]
+
+[^Unknowable Geometry]: https://www.youtube.com/watch?v=hEVeBDhWlRw
 
 One of largest challenges with encypting datalog facts is that the access patterns are not known in advance. While it's possible to structure EAV(C) fields as an orthogonal $n$-dimensional tensor, and query in any order, this has major drawbacks in both the cleartext and ciphertext cases. Representing data in this way tends to rely on duplication, indexing, and/or cyclical cross linking. This is not feasible in a Byzantine threat model.
 
@@ -172,6 +174,10 @@ Coupled with the with the attribite tag derivation (e.g. the RSA accumluator in 
 
 Leaking data through length
 
+## Semantic Collison
+
+A field of a particular value MAY be assigned multiple times. 
+
 # 2 Heirarchical Encryption
 
 The tabular heirarchy is as follows:
@@ -225,12 +231,12 @@ flowchart TD
     val2-1-1 -.-> val2-1-2 --> key6{"🔑2.1.2"} --> val6
 
     subgraph Concrete
-        val1("(ent1, attr1-1, val1, [])")
-        val2("(ent1, attr1-2, val2, [])")
-        val3("(ent1, attr1-2, val3, [])")
-        val4("(ent2, attr1-2, val4, [cidX, cidY])")
-        val5("(ent2, attr2-1, val5, [cidX])")
-        val6("(ent2, attr2-1, val6, [])")
+        val1("(ent1, attr1-1, val1-1-1, [])") --> tag1(tag: a1b)
+        val2("(ent1, attr1-2, val1-2-1, [])") --> tag2(tag: 2c3)
+        val3("(ent1, attr1-2, val1-2-2, [])") --> tag3(tag: d4e)
+        val4("(ent1, attr1-2, val1-2-3, [cidX, cidY])") --> tag4(tag: 5f6)
+        val5("(ent2, attr2-1, val2-1-2, [cidX])") --> tag5(tag: g7h)
+        val6("(ent2, attr2-1, val2-1-3, [])") --> tag6(tag: 8i9)
     end
 ```
 
@@ -259,9 +265,8 @@ Derivation of
 
 To lock any level to a single version, merge the 
 
-# 4 Semantic Collison
+# 4 Tag Derivation
 
-A field of a particular value MAY be assigned multiple times. 
 
 # 5 Prior Art
 
