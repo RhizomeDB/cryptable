@@ -1,4 +1,4 @@
-# Cryptable v0.1.0
+# CrypTable v0.1.0
 
 ## Editors
 
@@ -16,7 +16,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # Abstract
 
-A mechanism for hierarchically encrypting triple stores
+A mechanism for hierarchically encrypting triple stores, securing data temporally, and random access to data by relation.
 
 # 1 Introduction
 
@@ -26,9 +26,9 @@ WNFS
 
 ## 1.1 Motivation
 
-Facts in a Datalog or RDF database 
+Facts in a tuplestore are consistently 
 
-While possible to design a system that can query by any field, all available top-down solutions trade off trust (hexastore, layered range trees) or performance (FHE, zkSNARKs).
+While possible to design a system that can query by any field, all available top-down solutions trade off trust (hexastore, layered range trees) or performance (FHE, SNARK indices).
 
 Cryptable assumes that data will most frequently be granted heirarchically. This is notably often not how data is _accessed_, but does make for a simple mental of what is being shared. It is assumed that in granting access to "everything" about an entity, that this implies all of its fields. For example, granting access to all records with a `name` attribute, or where the value field is set to `Nara` without access to the rest of the entity are less common. As such, favouring the common case for granting read access is reasonable.
 
@@ -40,7 +40,7 @@ Once data is retrieved and decrypted, it MAY be indexed locally (e.g. hexastore)
 
 # 2 Query Dimensions
 
-One of largest challenges with encypting datalog facts is that the access patterns are not known in advance. While it's possible to structure EAV(C) fields as an orthogonal $n$-dimensional tensor, and query in any order, this has major drawbacks. Representing data in this way tends to rely on duplication, indexing, and/or cyclical cross linking. This is not feasible in a Byzantine threat model.
+One of largest challenges with encypting datalog facts is that the access patterns are not known in advance. While it's possible to structure EAV(C) fields as an orthogonal $n$-dimensional tensor, and query in any order, this has major drawbacks in both the cleartext and ciphertext cases. Representing data in this way tends to rely on duplication, indexing, and/or cyclical cross linking. This is not feasible in a Byzantine threat model.
 
 To make the problem tractable, access patterns are broken into two very broad categories which often interact: tabular heirarchy
 
@@ -48,15 +48,16 @@ To make the problem tractable, access patterns are broken into two very broad ca
 
 For the pruposes of this design, we treat the quad store as a triple store $\langle e, a, \langle v, c \rangle \rangle$.
 
-An intuitive access control layout is following the order:
+In reality, each of these relationships is completely orthogonal, but for the pruposes of access control, we simplify the base case to a linear relationship:
 
 ``` mermaid
 erDiagram
-    User ||--|{ Store: owns
+    Root ||--|{ Store: owns
     Store ||--|{ Entity: contains
     Entity ||--|{ Attribute: contains
     Attribute ||--|{ Value: contains
 ```
+
 
 ### 1.2.2 Stream Access
 
@@ -123,9 +124,20 @@ flowchart
 
 ### 1.2.3 DAG History
 
-History in systems like PomoDB are represented as an acyclic hash graph. While there are several techniques (k-anonymity, OT) that make it possible to search directly on history, they typically to require local secondary indices (or FHE). As tabular data access control MAY 
+History in systems like PomoDB are represented as an acyclic hash graph. 
 
-Reading a CID in the `causedBy` field of a quad MUST NOT immedietly grant access to the entire transative history. While this is an important access pattern in many graph queries, it is not desired for tabular queries. Typically the shape of graph data is more important in queries with a small number of common entities and attributes. Granting access to the entire history of those paths is thus viable.
+The most general solution requires local secondary indices (or FHE). Given that these do not match our performance or 
+
+While there are several techniques (k-anonymity, OT) that make it possible to search directly on history,
+
+
+Reading a CID in the `causedBy` field of a quad MUST NOT immedietly grant access to the entire transative history. Doing so would be potentially dangerous, especially if it crossed between stores. The semantics of the `causedBy` relation do not match that of access control.
+
+While this is an important access pattern in many graph queries, it is not desired for tabular queries. Typically the shape of graph data is more important in queries with a small number of common entities and attributes. Granting access to the entire history of those paths is thus viable.
+
+Instead, the CrypTable ony provides searchable encyprtion via an authentication tag. This is not an HMAC, since the goal is to avoid calculating the unique key for every fact. A cryptographically secure hash function MUST be used, and a nonce based on the [store ID] MUST be concatenated to the cleartext CID before hahsing. This tag MAY be places anywhere on the fact's envelope. When stored in an associative map using this tag as the entry label is RECOMMENDED.
+
+If space overhead is a concern, this tag MAY be further anonymized via truncation or XOR folding. Note that this does not increase the k-anonymity as the tag is already indistinguishable from any other tag.
 
 ## 1.x 
 
@@ -137,7 +149,7 @@ Reading a CID in the `causedBy` field of a quad MUST NOT immedietly grant access
 TODO bring the data/object table from WNFS here
 
 ## 1.x Lookup Performance
-
+  * [x] 
 - Raw decryption speed
 - Seek on large stores
 - Small network footprint whenever possible
@@ -236,4 +248,24 @@ A field of a particular value MAY be assigned multiple times.
 
 ## 6.2 Why Not k-Anonymity?
 
+
+
+TODO: actually, heck why NOT k-anym for CID histories as tags or the names of files.
+
+
+
 ## 6.3 Why 
+
+
+
+
+
+
+----------------------
+
+
+
+NOTES
+
+
+- Nested, but you can always contruct the pointer to any position in the EAV cube deterministically without doing all of teh intermediate lookups
