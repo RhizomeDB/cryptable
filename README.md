@@ -62,9 +62,9 @@ TODO bring the data/object table from WNFS here
 
 # 3 Encryption Geometry
 
-Footnote test[^Unknowable Geometry]
+Footnote test[^UnknowableGeometry]
 
-[^Unknowable Geometry]: https://www.youtube.com/watch?v=hEVeBDhWlRw
+[^UnknowableGeometry]: https://www.youtube.com/watch?v=hEVeBDhWlRw
 
 One of largest challenges with encypting datalog facts is that the access patterns are not known in advance. While it's possible to structure EAV(C) fields as an orthogonal $n$-dimensional tensor, and query in any order, this has major drawbacks in both the cleartext and ciphertext cases. Representing data in this way tends to rely on duplication, indexing, and/or cyclical cross linking. This is not feasible in a Byzantine threat model.
 
