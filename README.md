@@ -217,12 +217,12 @@ flowchart
                 subgraph attribute1.2.1
                     value1.2.1.1
                     value1.2.1.2
-                    value1.2.1.3
                 end
 
                 subgraph attribute1.2.2
                     value1.2.2.1
                     value1.2.2.2
+                    value1.2.2.3
                 end
             end
         end
@@ -253,8 +253,8 @@ flowchart
     value1.1.2.1 -.-> value1.1.2.2
 
     attribute1.2.1 -.-> attribute1.2.2
-    value1.2.1.1 -.-> value1.2.1.2 -.-> value1.2.1.3
-    value1.2.2.1 -.-> value1.2.2.2
+    value1.2.1.1 -.-> value1.2.1.2
+    value1.2.2.1 -.-> value1.2.2.2 -.-> value1.2.2.3
 
     attribute2.1.1 -.-> attribute2.1.2
     value2.1.2.1 -.-> value2.1.2.2
