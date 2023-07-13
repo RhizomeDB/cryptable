@@ -20,7 +20,7 @@ A mechanism for hierarchically encrypting triple stores, securing data temporall
 
 # 1 Introduction
 
-WNFS
+- Unlike WNFS's temporal cryptree, a cryptable has a fixed nesting depth
 
 - Scope: read control only; writes are out of scope of THIS spec
 
@@ -30,7 +30,7 @@ Facts in a tuplestore are consistently
 
 While possible to design a system that can query by any field, all available top-down solutions trade off trust (hexastore, layered range trees) or performance (FHE, SNARK indices).
 
-Cryptable assumes that data will most frequently be granted heirarchically. This is notably often not how data is _accessed_, but does make for a simple mental of what is being shared. It is assumed that in granting access to "everything" about an entity, that this implies all of its fields. For example, granting access to all records with a `name` attribute, or where the value field is set to `Nara` without access to the rest of the entity are less common. As such, favouring the common case for granting read access is reasonable.
+Cryptable assumes that data will most frequently be granted heirarchically. This is notably often not how data is _accessed_, but does make for a simple mental of what is being shared. It is assumed that in granting access to "everything" about an entity, that this implies all of its fields. For example, granting access to all records with a `name` attribute, or where the value field is set to `Boris` without access to the rest of the entity are less common. As such, favouring the common case for granting read access is reasonable.
 
 TODO Time: snapshot, ranges
 
