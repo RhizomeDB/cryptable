@@ -60,7 +60,9 @@ TODO bring the data/object table from WNFS here
 | Encrypted Region | Nestable encrypted collecions: stores, entities, attributes |
 | Accessible Scope | All of the facts that the viewer is capable of decrypting   |
 
-# 3 Encryption Geometry[^Unknowable Geometry]
+# 3 Encryption Geometry
+
+Footnote test[^Unknowable Geometry]
 
 [^Unknowable Geometry]: https://www.youtube.com/watch?v=hEVeBDhWlRw
 
