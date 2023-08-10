@@ -16,42 +16,45 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # Abstract
 
-A mechanism for hierarchically encrypting triple stores, securing data temporally, and random access to data by relation.
+CrypTable is a hierarchically encrypted triple store. It secures data by entity-attribute-value as well as temporally, and comes with efficient random access and diffing.
 
 # 1 Introduction
+
+## 1.1 Motivation
+
+While possible to design a system that can query by any field, all available top-down solutions trade off trust (hexastore, layered range trees) or performance (FHE, SNARK indices). Working with an encrypted database comes with tradeoffs. The naive approach is to encrypt the entire database. While this may be sufficient for simple cases, it forces developers to use separate databases to implement access contol for different users. At the other extreme are [homomorphically encrypted databases], where arbitrary queries may be performed on a fully encryted databases with arbitrary controls, but at the sacrifice of speed and dynamism.
+
+In a [local-first] context, records need to be able to move freely between machines. As such, access control needs to travel with the data itself. This implies that the result of a remote query must include the access control in the resulting records.
+
+## 1.2 Design Goals
+
+- Users manually manage as few keys as possible
+- Agnostic to persistence layer
+- Use established cryptography
+- Efficient seek in large stores
+- Minimize network footprint
+- Row-level access control
+- Range-level access control
+
+## 1.3 Approach
+
+[Triple stores] represent all data ("facts") into entity-attribute-value (EAV) triples. Taken together, these triples may be treated as tables or graphs. This consistent structure is advantageous for granular access control. It is trivial to encrypt a single triple. Extending read-control scope by the entity-attribute-value heirarchy, access to groups of related triples may be granted together at once. 
+
+[Cryptree]s are a well known way of organizing heirarchical encryption. The [Webnative File System][WNFS] (WNFS) is a cryptree, extended with temporal access control.
+
+Once data is retrieved and decrypted, it MAY be indexed locally (e.g. hexastore). 
+
+Cryptable assumes that data will most frequently be granted heirarchically. This is notably often not how data is _accessed_, but does make for a simple mental of what is being shared. It is assumed that in granting access to "everything" about an entity, that this implies all of its fields. For example, granting access to all records with a `name` attribute, or where the value field is set to `Boris` without access to the rest of the entity are less common. As such, favouring the common case for granting read access is reasonable.
+
+
+CryptTable is a 
 
 - Unlike WNFS's temporal cryptree, a cryptable has a fixed nesting depth
 
 - Scope: read control only; writes are out of scope of THIS spec
 
-## 1.1 Motivation
-
-Facts in a tuplestore are consistently 
-
-While possible to design a system that can query by any field, all available top-down solutions trade off trust (hexastore, layered range trees) or performance (FHE, SNARK indices).
-
-Cryptable assumes that data will most frequently be granted heirarchically. This is notably often not how data is _accessed_, but does make for a simple mental of what is being shared. It is assumed that in granting access to "everything" about an entity, that this implies all of its fields. For example, granting access to all records with a `name` attribute, or where the value field is set to `Boris` without access to the rest of the entity are less common. As such, favouring the common case for granting read access is reasonable.
-
-TODO Time: snapshot, ranges
 
 The design outlined in this specification MAY be extended by futher splitting data manually across multiple stores.
-
-Once data is retrieved and decrypted, it MAY be indexed locally (e.g. hexastore). 
-
-## 1.2 Goals
-
-
-- Manage as few keys as possible
-- Flexible enough to store in multiple ways (i.e. the data layer below this)
-
-- Sensible defaults: Simple rules _inside_ a store (though stores can be broken up arbitrarily to more custom control)
-
-TODO bring the data/object table from WNFS here
-
-  * [x] 
-- Raw decryption speed
-- Seek on large stores
-- Small network footprint whenever possible
 
 # 2 Terminology
 
@@ -59,6 +62,15 @@ TODO bring the data/object table from WNFS here
 |------------------|-------------------------------------------------------------|
 | Encrypted Region | Nestable encrypted collecions: stores, entities, attributes |
 | Accessible Scope | All of the facts that the viewer is capable of decrypting   |
+
+![](https://github.com/wnfs-wg/spec/raw/main/spec/diagrams/layer_dimensions.svg)
+
+| Visibility | Layer | Node        | Link                    |
+|------------|-------|-------------|-------------------------|
+| Decrypted  | File  | WNFS File   | File Path               |
+| Decrypted  | Data  | CBOR Object | `NameAccumulator` + Key |
+| Encrypted  | Data  | IPLD Block  | CID                     |
+
 
 # 3 Encryption Geometry[^UnknowableGeometry]
 
